@@ -57,19 +57,23 @@ def transform_data() -> dict:
 
 def upload_to_cloud_storage() -> dict:
     """Store: upload raw and processed files to Google Cloud Storage (bucket from GCS_BUCKET)."""
-    bucket_name = os.getenv("GCS_BUCKET")
-    if not bucket_name:
+    bucket_name = os.getenv("GCS_BUCKET", "").strip()
+    if not bucket_name or bucket_name == "your-bucket-name":
         return {"status": "skipped", "message": "GCS_BUCKET not set, files kept locally in data/"}
 
-    from google.cloud import storage
-    bucket = storage.Client().bucket(bucket_name)
-    run_id = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    uploaded = []
-    for local, prefix in [(RAW_FILE, "raw"), (PROCESSED_FILE, "processed")]:
-        blob_name = f"{prefix}/{run_id}_{os.path.basename(local)}"
-        bucket.blob(blob_name).upload_from_filename(local)
-        uploaded.append(f"gs://{bucket_name}/{blob_name}")
-    return {"status": "success", "uploaded": uploaded}
+    try:
+        from google.cloud import storage
+        bucket = storage.Client().bucket(bucket_name)
+        run_id = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        uploaded = []
+        for local, prefix in [(RAW_FILE, "raw"), (PROCESSED_FILE, "processed")]:
+            blob_name = f"{prefix}/{run_id}_{os.path.basename(local)}"
+            bucket.blob(blob_name).upload_from_filename(local)
+            uploaded.append(f"gs://{bucket_name}/{blob_name}")
+        return {"status": "success", "uploaded": uploaded}
+    except Exception as e:
+        return {"status": "error",
+                "message": f"Upload failed, files kept locally in data/. Check GCS_BUCKET and credentials. Details: {e}"}
 
 
 def generate_html_report() -> dict:

@@ -14,8 +14,9 @@ root_agent = Agent(
     instruction=(
         "You are a data engineering agent. When asked to run the pipeline, call these tools "
         "in order, one at a time: fetch_earthquake_data, transform_data, "
-        "upload_to_cloud_storage, generate_html_report. If a step returns an error, stop and "
-        "report it. Do not skip steps. When finished, give a short summary: records fetched, "
+        "upload_to_cloud_storage, generate_html_report. If the upload step returns an error or is "
+        "skipped, note it and still generate the report. If any other step returns an error, stop "
+        "and report it. Do not skip steps. When finished, give a short summary: records fetched, "
         "top region, where files were stored, and the report file path."
     ),
     tools=[fetch_earthquake_data, transform_data, upload_to_cloud_storage, generate_html_report],
