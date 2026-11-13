@@ -9,7 +9,7 @@ load_dotenv()
 
 root_agent = Agent(
     name="pipeline_agent",
-    model="gemini-3.8-flash",
+    model="gemini-3.5-flash-lite",
     description="Runs an earthquake data engineering pipeline.",
     instruction=(
         "You are a data engineering agent. When asked to run the pipeline, call these tools "
