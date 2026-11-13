@@ -1,0 +1,5 @@
+google-adk==2.14.1
+google-cloud-storage
+pandas
+requests
+python-dotenv
